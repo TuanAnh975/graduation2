@@ -11,7 +11,12 @@ namespace HanoiStreet.Editor
         const string Root = "Assets/HanoiStreet/Generated";
 
         [MenuItem("Hanoi Street/Create demo scene")]
-        public static void CreateDemo()
+        public static void CreateDemo() => CreateScene(false);
+
+        [MenuItem("Hanoi Street/Create open world scene")]
+        public static void CreateOpenWorld() => CreateScene(true);
+
+        static void CreateScene(bool openWorld)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             System.IO.Directory.CreateDirectory(Root);
@@ -43,8 +48,25 @@ namespace HanoiStreet.Editor
             }
             ConfigurePipeline();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var generator = new GameObject("Hanoi runtime generator").AddComponent<StreetGenerator>();
-            generator.profile = profile;
+            StreetGenerator generator = null;
+            HanoiWorldStreamer world = null;
+            if (openWorld)
+            {
+                var settings = AssetDatabase.LoadAssetAtPath<WorldProfile>(Root + "/OpenWorld.asset");
+                if (!settings)
+                {
+                    settings = ScriptableObject.CreateInstance<WorldProfile>();
+                    settings.streetAssets = profile;
+                    AssetDatabase.CreateAsset(settings, Root + "/OpenWorld.asset");
+                }
+                world = new GameObject("Hanoi streamed world").AddComponent<HanoiWorldStreamer>();
+                world.profile = settings;
+            }
+            else
+            {
+                generator = new GameObject("Hanoi runtime generator").AddComponent<StreetGenerator>();
+                generator.profile = profile;
+            }
             var sun = new GameObject("Afternoon sunlight").AddComponent<Light>();
             sun.type = LightType.Directional;
             sun.intensity = 1.5f;
@@ -53,16 +75,27 @@ namespace HanoiStreet.Editor
             RenderSettings.ambientLight = new Color(.55f, .6f, .65f);
             var camera = new GameObject("Main Camera").AddComponent<Camera>();
             camera.tag = "MainCamera";
-            camera.transform.position = new Vector3(0, 1.7f, 4);
-            camera.transform.rotation = Quaternion.Euler(0, 0, 0);
+            camera.transform.position = openWorld ? new Vector3(0, 12, -25) : new Vector3(0, 1.7f, 4);
+            camera.transform.rotation = Quaternion.Euler(openWorld ? 12 : 0, 0, 0);
             camera.farClipPlane = 600;
             camera.fieldOfView = 65;
             camera.backgroundColor = new Color(.62f, .7f, .77f);
             camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.gameObject.AddComponent<FreeFlyCamera>();
+            if (world)
+            {
+                world.viewer = camera.transform;
+                camera.farClipPlane = world.profile.cellSize * (world.profile.loadRadius + 1);
+                RenderSettings.fog = true;
+                RenderSettings.fogMode = FogMode.Linear;
+                RenderSettings.fogColor = camera.backgroundColor;
+                RenderSettings.fogStartDistance = world.profile.cellSize * .55f;
+                RenderSettings.fogEndDistance = world.profile.cellSize * .95f;
+            }
             AssetDatabase.SaveAssets();
-            EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), Root + "/HanoiDemo.unity");
-            Selection.activeObject = generator;
-            Debug.Log("Demo created. Press Play to generate; move the camera with the Scene view before Play if needed.");
+            EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), Root + (openWorld ? "/HanoiWorld.unity" : "/HanoiDemo.unity"));
+            Selection.activeObject = openWorld ? (Object)world : generator;
+            Debug.Log("Scene created. Press Play; WASD move, Q/E descend/ascend, Shift sprint, hold right mouse to look.");
         }
 
         static void ConfigurePipeline()

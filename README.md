@@ -2,6 +2,59 @@
 
 Dự án Unity sinh phố Hà Nội trong runtime, có bộ tạo prefab nhà hình học 1–4 tầng. Đây là nền tảng kiến trúc thủ tục, chưa phải cảnh photorealistic hoàn thiện. Chưa được compile hoặc chạy bằng Unity trong môi trường cloud này vì máy không có Unity Editor/license.
 
+## Mới: bản đồ rộng sinh quanh camera
+
+1. Cập nhật mã trong `Assets/HanoiStreet` từ GitHub. Nếu đã có dự án làm việc, giữ lại `Generated`, các file `.meta` và scene/tài nguyên tự chỉnh sửa; không cần xóa Library hoặc tạo lại prefab nhà.
+2. Mở Unity, chờ compile xong, chọn **Hanoi Street > Create open world scene**. Lưu scene đang làm trước khi chuyển.
+3. Công cụ tạo scene **HanoiWorld** và profile **OpenWorld** trong `Assets/HanoiStreet/Generated`. Scene cũ **HanoiDemo** vẫn là tuyến phố thẳng để so sánh.
+4. Nhấn **Play**, chờ các ô xung quanh được sinh dần trong vài giây. Nhấp tab **Game** để nhận điều khiển.
+5. **W/A/S/D** di chuyển, **Q/E** xuống/lên, **Shift** tăng tốc; **giữ chuột phải** và rê chuột để nhìn. Thả chuột phải hoặc nhấn **Escape** để trả con trỏ; sau Escape cần thả rồi nhấn lại chuột phải. Camera bay tự do, có thể xuyên qua vật thể; chưa có nhân vật đi bộ/collision cho camera.
+
+### Cấu trúc bản đồ
+
+- Mạng đường hai chiều theo cả X/Z, các nút giao lệch vị trí theo seed và nối bằng đường cong Bézier. Đây là lưới đường biến dạng, chưa phải dữ liệu bản đồ Hà Nội thật hoặc hệ thống đường hữu cơ tùy ý.
+- Mỗi ô sở hữu một nút giao và hai cạnh đi về phía đông/bắc; các cạnh còn lại do ô bên cạnh sở hữu. Điểm nối và tiếp tuyến lấy từ tọa độ toàn cục, không dựa vào thứ tự tải, nên các ô dùng chung cùng một nút đường.
+- Mặt đường, vỉa hè, bó vỉa, dải phân cách trên một số trục chính, vạch đường và vạch sang đường được tạo theo đường cong. Nhà và các nhóm hàng quán/xe đỗ/cây tiếp tục dùng profile `Residential`.
+- Một số nút có cầu vượt hướng đông–tây, đường bắc–nam nằm dưới; có đường dốc, trụ, vỉa hè và thành chắn. Không đặt nhà/hàng quán trên phần dốc. Đi xa dọc các đường để gặp cầu vượt; không phải mọi ô đều có cầu.
+- Đèn có chu kỳ xanh/vàng/đỏ, hai hướng giao nhau không cùng xanh; các hướng tách cao độ không phải chờ nhau. Xe bám đường cong, có thể rẽ, chờ đèn và chờ ô kế tiếp tải xong; không rẽ từ cầu vượt xuống đường cắt bên dưới.
+- Camera di chuyển làm tải các ô gần nhất trước và thu hồi ô ngoài vùng tải, gồm mesh tạo lúc chạy. Cùng seed/profile/prefab tái tạo cùng kiến trúc khi quay lại; trạng thái xe và đồng hồ tín hiệu không được lưu như trạng thái thế giới.
+- Có floating origin: sau khoảng 8 ô, camera và các ô đang tải được dịch về gần gốc; tọa độ logic vẫn giữ nguyên. Điều này hỗ trợ đi xa, không phải cam kết thế giới vô hạn hay lưu game.
+
+### Tinh chỉnh trước khi Play
+
+Chọn `OpenWorld.asset` trong Project:
+
+| Trường | Ý nghĩa |
+| --- | --- |
+| `seed` | Thay bố cục nút giao, nhà và cầu vượt |
+| `cellSize` | Mặc định 256 m; tối thiểu 160 m; ô nhỏ làm dốc cầu gắt hơn |
+| `loadRadius` | Mặc định 1 = tối đa 9 ô; 2 = 25 ô; 3 = 49 ô và có thể rất nặng |
+| `junctionJitter` | Độ lệch nút giao, tăng để đường uốn rõ hơn |
+| `roadWidth`, `sidewalkWidth` | Bề rộng đường và vỉa hè |
+| `flyoverChance` | Xác suất cầu ở các nút đủ điều kiện; đặt 0 để tắt |
+| `housesPerRoadSide` | Giới hạn số nhà mỗi bên một đoạn đường; tự giảm khi đường quá ngắn |
+| `housesPerFrame` | Ngân sách số nhà sinh mỗi frame; giảm nếu xuất hiện khựng khi tải ô |
+| `vehiclesPerRoad` | Mặc định 2; đặt 0 để tắt xe và kiểm tra bản đồ riêng |
+| `streetAssets` | Profile chứa prefab nhà và vật thể đường phố |
+
+Chỉnh thông số khi dừng Play, sau đó chạy lại. Không hỗ trợ thay kích thước ô/seed giữa lúc bản đồ đang tải. Khi đổi khoảng nhìn, kiểm tra thêm fog/camera trong scene. Bản mặc định dùng sương mù để làm dịu ranh giới vùng đang tải.
+
+### Kiểm tra bản đồ mới
+
+**Hanoi Street > Validate world graph** kiểm tra 338 cạnh đường trong vùng tọa độ âm/dương: điểm nối, tiếp tuyến, hình học khi dịch gốc và xung đột đèn xanh. Menu này phải chạy trong Unity; chưa được thực thi trong cloud.
+
+Trong Play Mode, cần kiểm tra:
+
+1. Đi qua nhiều ô theo cả X/Z và đường chéo; đường không đứt ở biên. Hierarchy chỉ giữ số ô trong phạm vi `loadRadius` sau khi đợt sinh kết thúc.
+2. Quay về ô cũ: nhà, đường và cầu có cùng bố cục, không nhân đôi. Đứng sát biên và đi qua lại trong lúc ô còn đang sinh.
+3. Bay nhanh hoặc đổi vị trí camera xa: ô cũ được thu hồi, ô mới sinh quanh camera; chấp nhận cảnh chưa kịp sinh trong lúc dịch chuyển quá nhanh.
+4. Đi xa hơn 8 ô để kiểm tra floating origin: không thay đổi bố cục, xe/đèn vẫn hoạt động, camera không bật về vị trí cũ.
+5. Kiểm tra vỉa hè, đường dốc và độ cao qua cầu, nhà không nằm trên dốc. Xe trên cầu không rẽ xuống tầng dưới.
+6. Quan sát xe chờ đèn, rẽ và đi tiếp khi ô kế bên tải xong. Tắt/bật component streamer trong Play để kiểm tra thu hồi và sinh lại.
+7. Dùng Unity Profiler trên máy đích để đo giật khung hình/bộ nhớ khi chạy lâu; chưa có số đo FPS hoặc cam kết hiệu năng.
+
+Đây là bản streaming và giao thông minh họa: chưa có NavMesh, vật lý lái xe, tránh va chạm hoàn chỉnh, phân quyền rẽ, người đi bộ, LOD, object pooling hoặc save game. Xe có kiểm tra xe cùng hướng ở phía trước nhưng vẫn có thể chồng/cắt nhau tại giao lộ; xe thuộc ô đã bị thu hồi sẽ biến mất. Góc nút giao và mối nối vỉa hè hiện dùng các mảng hình học đơn giản, cần kiểm tra trực quan và tinh chỉnh. Chưa có xác nhận chạy Play Mode cho các chức năng mới trong cloud.
+
 ## Chạy dự án
 
 1. Cài Unity **6000.0.23f1 (Unity 6 LTS)** qua Unity Hub, thêm thư mục repository làm project.
@@ -50,7 +103,7 @@ Vật liệu hiện dùng màu phẳng, kính màu đục để tránh lỗi s�
 
 Vật liệu cần albedo/normal/roughness phù hợp URP, tỉ lệ texel nhất quán, vết bẩn và ẩm ở vị trí có nguyên nhân. Thêm ánh sáng bầu trời/HDRI, exposure và color grading sau khi có asset thật. Không thể đạt photorealism chỉ bằng tăng số lượng vật thể ngẫu nhiên.
 
-Giai đoạn tiếp theo: prefab facade module, mái che và biển hiệu theo loại hàng; dây điện/cột điện; lối vào và ràng buộc tránh chắn cửa; giao lộ; người đi bộ và hành vi xe máy; decal; LOD, GPU instancing và streaming theo đoạn phố. Hiện chưa có các chức năng này.
+Giai đoạn tiếp theo: prefab facade module, mái che và biển hiệu theo loại hàng; dây điện/cột điện; lối vào và ràng buộc tránh chắn cửa; người đi bộ và hành vi xe máy đầy đủ; decal; LOD, GPU instancing và object pooling. Bản đồ mới đã có giao lộ và streaming theo ô, nhưng vẫn cần kiểm chứng trực quan/hiệu năng trong Unity.
 
 ## Kiểm chứng trong Unity cần thực hiện
 
