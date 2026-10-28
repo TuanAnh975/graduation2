@@ -1,0 +1,68 @@
+{
+  "buildingId": "VN_RST_A_001",
+  "categoryTag": "Restaurant",
+  "styleFamily": "Older_TiledPhoShop",
+  "width": 5.4,
+  "depth": 10,
+  "floorCount": 2,
+  "floorHeights": [
+    3.6,
+    3.2
+  ],
+  "frontDirection": "-Y",
+  "entrances": [],
+  "variantId": "001",
+  "height": 8.2754,
+  "origin": "Ground-level footprint center",
+  "units": "meters",
+  "assetReferences": {
+    "fbx": "UnityPackage/Models/VN_RST_A_001.fbx",
+    "blend": "Buildings/VN_RST_A_001.blend",
+    "collection": "VN_RST_A_001",
+    "previews": [
+      "Previews/VN_RST_A_001_front.png",
+      "Previews/VN_RST_A_001_right.png",
+      "Previews/VN_RST_A_001_elevated.png"
+    ],
+    "source": "vn_modular.py",
+    "moduleLibrary": "VN_Modules.blend",
+    "materials": "UnityPackage/Materials/materials.json",
+    "reviewBlend": "Batch01_Review.blend"
+  },
+  "exportSettings": {
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "global_scale": 1.0,
+    "apply_unit_scale": true,
+    "apply_scale_options": "FBX_SCALE_UNITS",
+    "bake_space_transform": false,
+    "use_mesh_modifiers": true,
+    "use_triangles": true,
+    "add_leaf_bones": false
+  },
+  "unityMapping": {
+    "front": "+Z after VNBuildingImporter socket normalization",
+    "up": "+Y",
+    "bakeAxisConversion": true,
+    "globalScale": 1,
+    "useFileScale": true,
+    "tagAssignment": "Explicit Build Prefabs menu; FBX does not encode Unity Tags"
+  },
+  "geometry": {
+    "meshCount": 89,
+    "triangles": 7788,
+    "bounds": {
+      "min": [
+        -2.700000047683716,
+        -5.0,
+        0.0
+      ],
+      "max": [
+        2.700000047683716,
+        5.0,
+        8.27538776397705
+      ]
+    }
+  },
+  "status": "prototype_awaiting_user_review"
+}

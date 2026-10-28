@@ -1,0 +1,75 @@
+{
+  "buildingId": "VN_BNK_A_001",
+  "categoryTag": "Bank",
+  "styleFamily": "Neighborhood_Branch",
+  "width": 8,
+  "depth": 12,
+  "floorCount": 2,
+  "floorHeights": [
+    4.0,
+    3.4
+  ],
+  "frontDirection": "-Y",
+  "entrances": [
+    {
+      "name": "Bank_Entry",
+      "clearWidth": 2.29,
+      "bottom": 0.1,
+      "y": -4.5
+    }
+  ],
+  "variantId": "001",
+  "height": 9.9,
+  "origin": "Ground-level footprint center",
+  "units": "meters",
+  "assetReferences": {
+    "fbx": "UnityPackage/Models/VN_BNK_A_001.fbx",
+    "blend": "Buildings/VN_BNK_A_001.blend",
+    "collection": "VN_BNK_A_001",
+    "previews": [
+      "Previews/VN_BNK_A_001_front.png",
+      "Previews/VN_BNK_A_001_right.png",
+      "Previews/VN_BNK_A_001_elevated.png"
+    ],
+    "source": "vn_modular.py",
+    "moduleLibrary": "VN_Modules.blend",
+    "materials": "UnityPackage/Materials/materials.json",
+    "reviewBlend": "Batch01_Review.blend"
+  },
+  "exportSettings": {
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "global_scale": 1.0,
+    "apply_unit_scale": true,
+    "apply_scale_options": "FBX_SCALE_UNITS",
+    "bake_space_transform": false,
+    "use_mesh_modifiers": true,
+    "use_triangles": true,
+    "add_leaf_bones": false
+  },
+  "unityMapping": {
+    "front": "+Z after VNBuildingImporter socket normalization",
+    "up": "+Y",
+    "bakeAxisConversion": true,
+    "globalScale": 1,
+    "useFileScale": true,
+    "tagAssignment": "Explicit Build Prefabs menu; FBX does not encode Unity Tags"
+  },
+  "geometry": {
+    "meshCount": 70,
+    "triangles": 6796,
+    "bounds": {
+      "min": [
+        -4.0,
+        -6.0,
+        0.0
+      ],
+      "max": [
+        4.0,
+        6.0,
+        9.899999618530273
+      ]
+    }
+  },
+  "status": "prototype_awaiting_user_review"
+}

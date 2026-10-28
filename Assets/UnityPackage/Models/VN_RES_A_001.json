@@ -1,0 +1,82 @@
+{
+  "buildingId": "VN_RES_A_001",
+  "categoryTag": "Residential",
+  "styleFamily": "PostDoiMoi_Terrace",
+  "width": 4.2,
+  "depth": 11,
+  "floorCount": 3,
+  "floorHeights": [
+    3.6,
+    3.3,
+    3.3
+  ],
+  "frontDirection": "-Y",
+  "entrances": [
+    {
+      "name": "Personal_Door",
+      "clearWidth": 0.9400000000000001,
+      "bottom": 0.1,
+      "y": -5.12
+    },
+    {
+      "name": "Balcony_Door",
+      "clearWidth": 1.19,
+      "bottom": 3.76,
+      "y": -4.45
+    }
+  ],
+  "variantId": "001",
+  "height": 13.06,
+  "origin": "Ground-level footprint center",
+  "units": "meters",
+  "assetReferences": {
+    "fbx": "UnityPackage/Models/VN_RES_A_001.fbx",
+    "blend": "Buildings/VN_RES_A_001.blend",
+    "collection": "VN_RES_A_001",
+    "previews": [
+      "Previews/VN_RES_A_001_front.png",
+      "Previews/VN_RES_A_001_right.png",
+      "Previews/VN_RES_A_001_elevated.png"
+    ],
+    "source": "vn_modular.py",
+    "moduleLibrary": "VN_Modules.blend",
+    "materials": "UnityPackage/Materials/materials.json",
+    "reviewBlend": "Batch01_Review.blend"
+  },
+  "exportSettings": {
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "global_scale": 1.0,
+    "apply_unit_scale": true,
+    "apply_scale_options": "FBX_SCALE_UNITS",
+    "bake_space_transform": false,
+    "use_mesh_modifiers": true,
+    "use_triangles": true,
+    "add_leaf_bones": false
+  },
+  "unityMapping": {
+    "front": "+Z after VNBuildingImporter socket normalization",
+    "up": "+Y",
+    "bakeAxisConversion": true,
+    "globalScale": 1,
+    "useFileScale": true,
+    "tagAssignment": "Explicit Build Prefabs menu; FBX does not encode Unity Tags"
+  },
+  "geometry": {
+    "meshCount": 73,
+    "triangles": 5268,
+    "bounds": {
+      "min": [
+        -2.0999999046325684,
+        -5.5,
+        0.0
+      ],
+      "max": [
+        2.0999999046325684,
+        5.5,
+        13.0600004196167
+      ]
+    }
+  },
+  "status": "prototype_awaiting_user_review"
+}
